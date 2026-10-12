@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone Prototype View</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #121212; /* Dark background framing the phone */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* iPhone frame container locked to modern iPhone aspect ratio (~19.5:9) */
+        .phone-frame {
+            width: 100%;
+            max-width: 412px; /* Standard iPhone logical width */
+            height: 100vh;
+            max-height: 890px; /* Standard iPhone logical height */
+            background-color: #000;
+            overflow-y: auto; /* Enables scrolling for the long image */
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 0;
+        }
+
+        @media (min-width: 480px) {
+            .phone-frame {
+                border-radius: 40px; /* Adds physical phone curves on larger screens */
+                border: 10px solid #2a2a2a;
+            }
+        }
+
+        /* The long screenshot */
+        .scrollable-image {
+            width: 100%;
+            display: block;
+            height: auto;
+        }
+
+        /* Hide scrollbar for a cleaner mobile app look */
+        .phone-frame::-webkit-scrollbar {
+            display: none;
+        }
+        .phone-frame {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame">
+        <img src="app-screen.png" alt="App Screen" class="scrollable-image">
+    </div>
+
+</body>
+</html>
