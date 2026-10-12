@@ -30,7 +30,7 @@
             background-color: #000;
             border-radius: 44px;
             border: 10px solid #1c1c1e;
-            overflow-y: auto;
+            overflow: hidden;
             position: relative;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
         }
@@ -38,7 +38,13 @@
         /* View Containers */
         .screen-view {
             width: 100%;
-            position: relative;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            background-color: #000;
+            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
         }
 
         .scrollable-image {
@@ -48,18 +54,20 @@
         }
 
         /* Hide Scrollbars */
-        .phone-frame::-webkit-scrollbar {
+        .phone-frame::-webkit-scrollbar,
+        .screen-view::-webkit-scrollbar {
             display: none;
         }
-        .phone-frame {
+        .phone-frame,
+        .screen-view {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
 
-        /* Clickable Hotspot overlay over Cash card */
+        /* Clickable Hotspot over Cash card */
         .cash-hotspot {
             position: absolute;
-            top: 17%;    /* Positioned right over the Cash card */
+            top: 17%;
             left: 5%;
             width: 90%;
             height: 7%;
@@ -67,9 +75,14 @@
             z-index: 10;
         }
 
-        /* Hidden class to switch screens */
-        .hidden {
-            display: none;
+        /* Animation States for Bottom-Up Sheet */
+        #cashView {
+            transform: translateY(100%);
+            z-index: 20;
+        }
+
+        #cashView.active {
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -83,26 +96,65 @@
             <img src="app-screen.jpeg" alt="Main Screen" class="scrollable-image">
         </div>
 
-        <!-- View 2: Cash Screen (Initially Hidden) -->
-        <div id="cashView" class="screen-view hidden" onclick="closeCashScreen()">
+        <!-- View 2: Cash Screen (Slide-up sheet with swipe-down support) -->
+        <div id="cashView" class="screen-view">
             <img src="cash-screen.jpeg" alt="Cash Screen" class="scrollable-image">
         </div>
 
     </div>
 
     <script>
+        const cashView = document.getElementById('cashView');
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+
         function openCashScreen() {
-            document.getElementById('mainView').classList.add('hidden');
-            document.getElementById('cashView').classList.remove('hidden');
-            // Scroll back to top when switching views
-            document.getElementById('phoneFrame').scrollTop = 0;
+            cashView.scrollTop = 0;
+            cashView.style.transform = '';
+            cashView.classList.add('active');
         }
 
         function closeCashScreen() {
-            document.getElementById('cashView').classList.add('hidden');
-            document.getElementById('mainView').classList.remove('hidden');
-            document.getElementById('phoneFrame').scrollTop = 0;
+            cashView.style.transform = '';
+            cashView.classList.remove('active');
         }
+
+        /* Touch Gestures for Swipe-Down-To-Close */
+        cashView.addEventListener('touchstart', (e) => {
+            // Only allow dragging down if scrolled all the way to the top
+            if (cashView.scrollTop <= 0) {
+                startY = e.touches[0].clientY;
+                isDragging = true;
+            }
+        }, { passive: true });
+
+        cashView.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            currentY = e.touches[0].clientY;
+            let diff = currentY - startY;
+
+            // If pulling downwards
+            if (diff > 0) {
+                cashView.style.transition = 'none';
+                cashView.style.transform = `translateY(${diff}px)`;
+            }
+        }, { passive: true });
+
+        cashView.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            let diff = currentY - startY;
+
+            cashView.style.transition = 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)';
+            
+            // If swiped down past 120px, close it; otherwise snap back up
+            if (diff > 120) {
+                closeCashScreen();
+            } else {
+                cashView.style.transform = 'translateY(0)';
+            }
+        });
     </script>
 
 </body>
