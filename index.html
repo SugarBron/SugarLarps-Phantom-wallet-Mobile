@@ -18,21 +18,27 @@
             align-items: center;
             min-height: 100dvh;
             overflow: hidden;
+            margin: 0;
         }
 
-        /* iPhone 13 Container */
+        /* Fluid container for mobile, locked aspect-ratio for desktop */
         .phone-frame {
-            width: 100%;
-            max-width: 390px;
+            width: 100vw;
             height: 100dvh;
-            max-height: 844px;
-            aspect-ratio: 390 / 844;
             background-color: #000;
-            border-radius: 44px;
-            border: 10px solid #1c1c1e;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        @media (min-width: 450px) {
+            .phone-frame {
+                width: 390px;
+                height: 844px;
+                aspect-ratio: 390 / 844;
+                border-radius: 44px;
+                border: 10px solid #1c1c1e;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            }
         }
 
         /* View Containers */
@@ -51,6 +57,23 @@
             width: 100%;
             display: block;
             height: auto;
+            padding-bottom: 90px; /* Adds space at the bottom so content isn't hidden behind the fixed bar */
+        }
+
+        /* Fixed Sticky Bottom Search Bar */
+        .sticky-bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 5;
+            pointer-events: none; /* Allows clicks to pass through empty spaces if needed */
+        }
+
+        .sticky-bottom-bar img {
+            width: 100%;
+            display: block;
+            pointer-events: auto; /* Keeps the bar interactive */
         }
 
         /* Hide Scrollbars */
@@ -78,7 +101,7 @@
         /* Animation States for Bottom-Up Sheet */
         #cashView {
             transform: translateY(100%);
-            z-index: 20;
+            z-index: 20; /* Sits above the sticky bottom bar */
         }
 
         #cashView.active {
@@ -90,21 +113,27 @@
 
     <div class="phone-frame" id="phoneFrame">
         
-        <!-- View 1: Main Screen -->
+        <!-- View 1: Main Screen (Scrollable) -->
         <div id="mainView" class="screen-view">
             <div class="cash-hotspot" onclick="openCashScreen()"></div>
             <img src="app-screen.jpeg" alt="Main Screen" class="scrollable-image">
         </div>
 
-        <!-- View 2: Cash Screen (Slide-up sheet with swipe-down support) -->
+        <!-- Sticky Bottom Bar (Stays fixed on Main Screen, hidden when cash view opens) -->
+        <div class="sticky-bottom-bar" id="stickyBar">
+            <img src="bottom-bar.jpeg" alt="Search Bar">
+        </div>
+
+        <!-- View 2: Cash Screen (Slide-up sheet) -->
         <div id="cashView" class="screen-view">
-            <img src="cash-screen.jpeg" alt="Cash Screen" class="scrollable-image">
+            <img src="cash-screen.jpeg" alt="Cash Screen" class="scrollable-image" style="padding-bottom: 0;">
         </div>
 
     </div>
 
     <script>
         const cashView = document.getElementById('cashView');
+        const stickyBar = document.getElementById('stickyBar');
         let startY = 0;
         let currentY = 0;
         let isDragging = false;
@@ -113,16 +142,17 @@
             cashView.scrollTop = 0;
             cashView.style.transform = '';
             cashView.classList.add('active');
+            stickyBar.style.display = 'none'; // Hide search bar when cash is open
         }
 
         function closeCashScreen() {
             cashView.style.transform = '';
             cashView.classList.remove('active');
+            stickyBar.style.display = 'block'; // Bring back search bar
         }
 
         /* Touch Gestures for Swipe-Down-To-Close */
         cashView.addEventListener('touchstart', (e) => {
-            // Only allow dragging down if scrolled all the way to the top
             if (cashView.scrollTop <= 0) {
                 startY = e.touches[0].clientY;
                 isDragging = true;
@@ -134,7 +164,6 @@
             currentY = e.touches[0].clientY;
             let diff = currentY - startY;
 
-            // If pulling downwards
             if (diff > 0) {
                 cashView.style.transition = 'none';
                 cashView.style.transform = `translateY(${diff}px)`;
@@ -148,7 +177,6 @@
 
             cashView.style.transition = 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)';
             
-            // If swiped down past 120px, close it; otherwise snap back up
             if (diff > 120) {
                 closeCashScreen();
             } else {
