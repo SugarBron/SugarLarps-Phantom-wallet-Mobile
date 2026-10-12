@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iPhone 13 Prototype</title>
+    <title>Phantom Wallet Prototype</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,7 +12,7 @@
         }
 
         body {
-            background-color: #0b0b0b; /* Backdrop framing the phone */
+            background-color: #0b0b0b;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -20,7 +20,7 @@
             overflow: hidden;
         }
 
-        /* iPhone 13 Frame with forced rounded corners and border everywhere */
+        /* iPhone 13 Container */
         .phone-frame {
             width: 100%;
             max-width: 390px;
@@ -28,11 +28,17 @@
             max-height: 844px;
             aspect-ratio: 390 / 844;
             background-color: #000;
-            border-radius: 44px; /* Matches iPhone rounded screen corners */
-            border: 10px solid #1c1c1e; /* Physical phone bezel look */
+            border-radius: 44px;
+            border: 10px solid #1c1c1e;
             overflow-y: auto;
             position: relative;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        /* View Containers */
+        .screen-view {
+            width: 100%;
+            position: relative;
         }
 
         .scrollable-image {
@@ -41,7 +47,7 @@
             height: auto;
         }
 
-        /* Hide scrollbars */
+        /* Hide Scrollbars */
         .phone-frame::-webkit-scrollbar {
             display: none;
         }
@@ -49,13 +55,55 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Clickable Hotspot overlay over Cash card */
+        .cash-hotspot {
+            position: absolute;
+            top: 17%;    /* Positioned right over the Cash card */
+            left: 5%;
+            width: 90%;
+            height: 7%;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Hidden class to switch screens */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div class="phone-frame">
-        <img src="app-screen.jpeg" alt="App Screen" class="scrollable-image">
+    <div class="phone-frame" id="phoneFrame">
+        
+        <!-- View 1: Main Screen -->
+        <div id="mainView" class="screen-view">
+            <div class="cash-hotspot" onclick="openCashScreen()"></div>
+            <img src="app-screen.jpeg" alt="Main Screen" class="scrollable-image">
+        </div>
+
+        <!-- View 2: Cash Screen (Initially Hidden) -->
+        <div id="cashView" class="screen-view hidden" onclick="closeCashScreen()">
+            <img src="cash-screen.png" alt="Cash Screen" class="scrollable-image">
+        </div>
+
     </div>
+
+    <script>
+        function openCashScreen() {
+            document.getElementById('mainView').classList.add('hidden');
+            document.getElementById('cashView').classList.remove('hidden');
+            // Scroll back to top when switching views
+            document.getElementById('phoneFrame').scrollTop = 0;
+        }
+
+        function closeCashScreen() {
+            document.getElementById('cashView').classList.add('hidden');
+            document.getElementById('mainView').classList.remove('hidden');
+            document.getElementById('phoneFrame').scrollTop = 0;
+        }
+    </script>
 
 </body>
 </html>
