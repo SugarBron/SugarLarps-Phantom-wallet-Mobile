@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPhone Prototype View</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>iPhone 13 Prototype</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,42 +12,43 @@
         }
 
         body {
-            background-color: #121212; /* Dark background framing the phone */
+            background-color: #0b0b0b; /* Dark backdrop for desktop framing */
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: 100dvh;
             overflow: hidden;
         }
 
-        /* iPhone frame container locked to modern iPhone aspect ratio (~19.5:9) */
+        /* iPhone 13 Frame locked to exact 390x844 aspect ratio */
         .phone-frame {
-            width: 100%;
-            max-width: 412px; /* Standard iPhone logical width */
-            height: 100vh;
-            max-height: 890px; /* Standard iPhone logical height */
+            width: 100vw;
+            height: 100dvh;
+            max-width: 390px;
+            max-height: 844px;
+            aspect-ratio: 390 / 844;
             background-color: #000;
-            overflow-y: auto; /* Enables scrolling for the long image */
+            overflow-y: auto;
             position: relative;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            border-radius: 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
         }
 
-        @media (min-width: 480px) {
+        /* Add a sleek phone border and rounding when viewed on larger screens (like a laptop) */
+        @media (min-width: 420px) {
             .phone-frame {
-                border-radius: 40px; /* Adds physical phone curves on larger screens */
-                border: 10px solid #2a2a2a;
+                border-radius: 44px;
+                border: 12px solid #1c1c1e;
+                height: 85dvh; /* Leaves breathing room on desktop */
             }
         }
 
-        /* The long screenshot */
         .scrollable-image {
             width: 100%;
             display: block;
             height: auto;
         }
 
-        /* Hide scrollbar for a cleaner mobile app look */
+        /* Hide scrollbars for a native app feel */
         .phone-frame::-webkit-scrollbar {
             display: none;
         }
