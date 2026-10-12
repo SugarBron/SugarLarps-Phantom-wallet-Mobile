@@ -19,7 +19,6 @@
             min-height: 100dvh;
             overflow: hidden;
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         /* Fluid container for mobile, locked aspect-ratio for desktop */
@@ -58,30 +57,7 @@
             width: 100%;
             display: block;
             height: auto;
-            padding-bottom: 90px;
-        }
-
-        /* Dynamic Text Layers */
-        .dynamic-total-balance {
-            position: absolute;
-            top: 17.3%; /* Adjust if needed to cover the total balance area */
-            left: 5%;
-            color: #ffffff;
-            font-size: 33px;
-            font-weight: 700;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .dynamic-cash-amount {
-            position: absolute;
-            top: 33.3%; /* Adjust if needed to cover the cash row area */
-            right: 10%;
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: 600;
-            z-index: 5;
-            pointer-events: none;
+            padding-bottom: 90px; /* Adds space at the bottom so content isn't hidden behind the fixed bar */
         }
 
         /* Fixed Sticky Bottom Search Bar */
@@ -91,13 +67,13 @@
             left: 0;
             width: 100%;
             z-index: 5;
-            pointer-events: none;
+            pointer-events: none; /* Allows clicks to pass through empty spaces if needed */
         }
 
         .sticky-bottom-bar img {
             width: 100%;
             display: block;
-            pointer-events: auto;
+            pointer-events: auto; /* Keeps the bar interactive */
         }
 
         /* Hide Scrollbars */
@@ -125,7 +101,7 @@
         /* Animation States for Bottom-Up Sheet */
         #cashView {
             transform: translateY(100%);
-            z-index: 20;
+            z-index: 20; /* Sits above the sticky bottom bar */
         }
 
         #cashView.active {
@@ -141,13 +117,9 @@
         <div id="mainView" class="screen-view">
             <div class="cash-hotspot" onclick="openCashScreen()"></div>
             <img src="app-screen.jpeg" alt="Main Screen" class="scrollable-image">
-            
-            <!-- Dynamic Text Overlays -->
-            <div class="dynamic-total-balance" id="totalDisplay">€24.65</div>
-            <div class="dynamic-cash-amount" id="cashDisplay">€23.33</div>
         </div>
 
-        <!-- Sticky Bottom Bar -->
+        <!-- Sticky Bottom Bar (Stays fixed on Main Screen, hidden when cash view opens) -->
         <div class="sticky-bottom-bar" id="stickyBar">
             <img src="bottom-bar.jpeg" alt="Search Bar">
         </div>
@@ -160,18 +132,6 @@
     </div>
 
     <script>
-        // Prompt user and automatically update Cash + calculate Total Balance (+ 1.31€ Solana)
-        window.addEventListener('DOMContentLoaded', () => {
-            let userNumber = prompt("Enter the Cash amount (e.g., 23.33):", "23.33");
-            if (userNumber !== null && userNumber.trim() !== "") {
-                let cashVal = parseFloat(userNumber) || 0;
-                let totalVal = cashVal + 1.31; // Adds the 1.31€ Solana value automatically
-
-                document.getElementById('cashDisplay').innerText = "€" + cashVal.toFixed(2);
-                document.getElementById('totalDisplay').innerText = "€" + totalVal.toFixed(2);
-            }
-        });
-
         const cashView = document.getElementById('cashView');
         const stickyBar = document.getElementById('stickyBar');
         let startY = 0;
@@ -182,13 +142,13 @@
             cashView.scrollTop = 0;
             cashView.style.transform = '';
             cashView.classList.add('active');
-            stickyBar.style.display = 'none';
+            stickyBar.style.display = 'none'; // Hide search bar when cash is open
         }
 
         function closeCashScreen() {
             cashView.style.transform = '';
             cashView.classList.remove('active');
-            stickyBar.style.display = 'block';
+            stickyBar.style.display = 'block'; // Bring back search bar
         }
 
         /* Touch Gestures for Swipe-Down-To-Close */
