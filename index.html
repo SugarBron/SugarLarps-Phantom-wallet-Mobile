@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Phantom Wallet Prototype</title>
     <style>
+        /* Load custom Phantom Sans font */
+        @font-face {
+            font-family: 'PhantomSans';
+            src: url('PhantomSans-Bold.ttf') format('truetype'),
+                 url('phantomSans-Bold.ttf') format('truetype');
+            font-weight: 400 700;
+            font-style: normal;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -19,6 +28,7 @@
             min-height: 100dvh;
             overflow: hidden;
             margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         /* Fluid container for mobile, locked aspect-ratio for desktop */
@@ -57,7 +67,32 @@
             width: 100%;
             display: block;
             height: auto;
-            padding-bottom: 90px; /* Adds space at the bottom so content isn't hidden behind the fixed bar */
+            padding-bottom: 90px;
+        }
+
+        /* Dynamic Text Layers using Phantom Sans */
+        .dynamic-total-balance {
+            position: absolute;
+            top: 14.3%;
+            left: 5%;
+            color: #ffffff;
+            font-size: 50px;
+            font-weight: 700;
+            font-family: 'PhantomSans', -apple-system, sans-serif;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .dynamic-cash-amount {
+            position: absolute;
+            top: 33.3%;
+            right: 10%;
+            color: #ffffff;
+            font-size: 27px;
+            font-weight: 600;
+            font-family: 'PhantomSans', -apple-system, sans-serif;
+            z-index: 5;
+            pointer-events: none;
         }
 
         /* Fixed Sticky Bottom Search Bar */
@@ -67,13 +102,13 @@
             left: 0;
             width: 100%;
             z-index: 5;
-            pointer-events: none; /* Allows clicks to pass through empty spaces if needed */
+            pointer-events: none;
         }
 
         .sticky-bottom-bar img {
             width: 100%;
             display: block;
-            pointer-events: auto; /* Keeps the bar interactive */
+            pointer-events: auto;
         }
 
         /* Hide Scrollbars */
@@ -101,7 +136,7 @@
         /* Animation States for Bottom-Up Sheet */
         #cashView {
             transform: translateY(100%);
-            z-index: 20; /* Sits above the sticky bottom bar */
+            z-index: 20;
         }
 
         #cashView.active {
@@ -117,9 +152,13 @@
         <div id="mainView" class="screen-view">
             <div class="cash-hotspot" onclick="openCashScreen()"></div>
             <img src="app-screen.jpeg" alt="Main Screen" class="scrollable-image">
+            
+            <!-- Dynamic Text Overlays -->
+            <div class="dynamic-total-balance" id="totalDisplay">€24.65</div>
+            <div class="dynamic-cash-amount" id="cashDisplay">€23.33</div>
         </div>
 
-        <!-- Sticky Bottom Bar (Stays fixed on Main Screen, hidden when cash view opens) -->
+        <!-- Sticky Bottom Bar -->
         <div class="sticky-bottom-bar" id="stickyBar">
             <img src="bottom-bar.jpeg" alt="Search Bar">
         </div>
@@ -132,6 +171,17 @@
     </div>
 
     <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            let userNumber = prompt("Enter the Cash amount (e.g., 23.33):", "23.33");
+            if (userNumber !== null && userNumber.trim() !== "") {
+                let cashVal = parseFloat(userNumber) || 0;
+                let totalVal = cashVal + 1.31;
+
+                document.getElementById('cashDisplay').innerText = "€" + cashVal.toFixed(2);
+                document.getElementById('totalDisplay').innerText = "€" + totalVal.toFixed(2);
+            }
+        });
+
         const cashView = document.getElementById('cashView');
         const stickyBar = document.getElementById('stickyBar');
         let startY = 0;
@@ -142,13 +192,13 @@
             cashView.scrollTop = 0;
             cashView.style.transform = '';
             cashView.classList.add('active');
-            stickyBar.style.display = 'none'; // Hide search bar when cash is open
+            stickyBar.style.display = 'none';
         }
 
         function closeCashScreen() {
             cashView.style.transform = '';
             cashView.classList.remove('active');
-            stickyBar.style.display = 'block'; // Bring back search bar
+            stickyBar.style.display = 'block';
         }
 
         /* Touch Gestures for Swipe-Down-To-Close */
